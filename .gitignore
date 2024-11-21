@@ -39,3 +39,4 @@ terraform.rc
 mise.local.toml
 mise/.aws.sh
 *.json.compiled
+*.compiled.json5
