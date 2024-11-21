@@ -1,0 +1,34 @@
+#!/usr/bin/env python
+import os
+import pathlib
+import re
+
+TEMPLATES_LOCATION = 'aws/policies/'
+TEMPLATE_EXTENSION = 'json'
+
+def compile_policies():
+    for json_file in pathlib.Path(TEMPLATES_LOCATION).rglob(f'*.{TEMPLATE_EXTENSION}'):
+        compiled = False
+
+        with open(json_file, encoding='utf-8') as json_fd:
+            file_contents = json_fd.read()
+            unique_variable_matches = set(re.findall(r'\${\w+}', file_contents))
+            variables = [ re.sub(r'^\${(\w+)}$','\\1',item) for item in unique_variable_matches ]
+            variable_value_map = { variable:os.environ.get(variable,None) for variable in variables }
+
+            for key, value in variable_value_map.items():
+                if value is None:
+                    continue
+                file_contents = file_contents.replace('${%s}' % key, value)
+                compiled = True
+
+        if compiled:
+            compiled_json_file = f'{json_file}.compiled'
+
+            with open(compiled_json_file, encoding='utf-8', mode='w') as json_fd:
+                json_fd.write(file_contents)
+
+
+if __name__ == '__main__':
+    compile_policies()
+
