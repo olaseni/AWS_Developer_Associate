@@ -1,0 +1,45 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "InstancesWithSpecificInstanceType",
+      "Effect": "Allow",
+      "Action": [
+        "ec2:RunInstances",
+        "ec2:TerminateInstances",
+        "ec2:StartInstances",
+        "ec2:StopInstances",
+        "ec2:CreateTags"
+      ],
+      "Resource": [
+        "arn:aws:ec2:${AWS_REGION}:${AWS_ACCOUNT_ID}:instance/*",
+        "arn:aws:ec2:${AWS_REGION}:${AWS_ACCOUNT_ID}:network-interface/*",
+        "arn:aws:ec2:${AWS_REGION}:${AWS_ACCOUNT_ID}:volume/*",
+        "arn:aws:ec2:${AWS_REGION}:${AWS_ACCOUNT_ID}:key-pair/*",
+        "arn:aws:ec2:${AWS_REGION}:${AWS_ACCOUNT_ID}:security-group/*",
+        "arn:aws:ec2:${AWS_REGION}:${AWS_ACCOUNT_ID}:subnet/*",
+        "arn:aws:ec2:eu-west-2::image/ami-*"
+      ]
+    },
+    {
+      "Effect": "Deny",
+      "Action": "ec2:RunInstances",
+      "Resource": "arn:aws:ec2:${AWS_REGION}:${AWS_ACCOUNT_ID}:instance/*",
+      "Condition": {
+         "StringNotEquals": {
+            "ec2:InstanceType": "t2.micro"
+         }
+      }
+   },
+    {
+      "Effect": "Deny",
+      "Action": "ec2:*",
+      "Resource": "*",
+      "Condition": {
+        "StringNotEquals": {
+          "ec2:Region": "${AWS_REGION}"
+        }
+      }
+    }
+  ]
+}

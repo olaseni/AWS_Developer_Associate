@@ -1,0 +1,36 @@
+#!/usr/bin/env python
+import os
+import pathlib
+import re
+
+TEMPLATES_LOCATION = 'aws/policies/'
+TEMPLATE_EXTENSION = 'json'
+COMPILED_TEMPLATE_EXTENSION = 'compiled.json5'
+
+
+def compile_policies():
+    # Remove all pre-compiled files, as previous files may have been renamed.
+    # Compilation will re-generate new files
+    for compiled_json_file in pathlib.Path(TEMPLATES_LOCATION).rglob(f'*.{COMPILED_TEMPLATE_EXTENSION}'):
+        os.remove(compiled_json_file)
+
+    # Execute fresh compilations
+    for json_file in pathlib.Path(TEMPLATES_LOCATION).rglob(f'*.{TEMPLATE_EXTENSION}'):  # type:pathlib.Path
+        file_contents = json_file.read_text()
+        unique_variable_matches = set(re.findall(r'\${\w+}', file_contents))
+        variables = [re.sub(r'^\${(\w+)}$', '\\1', item) for item in unique_variable_matches]
+        variable_value_map = {variable: os.environ.get(variable, None) for variable in variables}
+
+        for key, value in variable_value_map.items():
+            if value is None:
+                continue
+            file_contents = file_contents.replace('${%s}' % key, value)
+
+        compiled_json_file = re.sub(r"\.{}".format(TEMPLATE_EXTENSION), ".{}".format(COMPILED_TEMPLATE_EXTENSION),
+                                    "{}".format(json_file.resolve()))
+
+        pathlib.Path(compiled_json_file).write_text(file_contents)
+
+
+if __name__ == '__main__':
+    compile_policies()
