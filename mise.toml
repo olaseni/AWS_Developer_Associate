@@ -1,6 +1,7 @@
 [tools]
 terraform = "latest"
 python = "3"
+opentofu = "latest"
 
 # AWS credentials may be added like so:
 # [env]
