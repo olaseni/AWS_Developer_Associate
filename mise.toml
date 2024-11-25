@@ -3,6 +3,12 @@ terraform = "latest"
 python = "3"
 opentofu = "latest"
 
+[settings]
+legacy_version_file = false
+
+[env]
+# TF_CLI_ARGS = "-var-file=../variables.tf"
+
 # AWS credentials may be added like so:
 # [env]
 # AWS_REGION =
