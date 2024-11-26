@@ -48,4 +48,10 @@ We need to run an explicit command to generate configuration for resource refere
 
 if Terraform finds the AWS resources, `main-generated.tf` will be found in the current directory. 
 
-The `import` block can be inactivated, or removed. The generated file becomes part of the workspace. You can now continue to manage the imported resource like any other Terraform resource.
+The `import` block can be inactivated, or removed, or left as is. The generated file becomes part of the workspace. You can now continue to manage the imported resource like any other Terraform resource.
+
+### Importing resources
+
+Apply changes to eventually import the resources based on the generated configuration.
+
+`$ terraform apply`
