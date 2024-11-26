@@ -36,3 +36,5 @@ variable "key_pair" {
   type        = string
   description = "SSH Key pair"
 }
+
+variable "existing_instance_id" {}
