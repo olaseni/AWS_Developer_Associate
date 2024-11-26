@@ -31,3 +31,8 @@ variable "instance_region" {
     error_message = "Please provide a valid value for variable INSTANCE_REGION."
   }
 }
+
+variable "key_pair" {
+  type        = string
+  description = "SSH Key pair"
+}
