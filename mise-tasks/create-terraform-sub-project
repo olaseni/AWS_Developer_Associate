@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+# Creates a sub-project directory/folder under the './terraform' path if this doesn't already exist
+# Some common files 'provider.tf' and 'variables.tf' are symlinked into this folder from the './terraform'
+
+TERRAFORM_DIR="${PWD}/terraform"
+
+# A project name must be passed
+PROJECT_NAME="${1}"
+
+[[ -n "${PROJECT_NAME}" ]] || { echo 'Please supply a project name' ; exit 1; }
+
+PROJECT_DIR="${TERRAFORM_DIR}/${PROJECT_NAME}"
+
+mkdir -p "${PROJECT_DIR}"
+
+[[ -d  "${PROJECT_DIR}" ]] || { echo 'The project folder was not created' ; exit 2; }
+
+symlink_file () {
+  FILE="${1}"
+  TARGET="${TERRAFORM_DIR}/${FILE}"
+  DESTINATION="${PROJECT_DIR}/${FILE}"
+  # Check file exists
+  [[ -f "${TARGET}" ]] || { echo "${TARGET} does not exist" ; return 3; }
+  [[ -L "${DESTINATION}" && -e  "${DESTINATION}" ]] || echo "${DESTINATION} already exists"
+  ln -s "${TARGET}" "${DESTINATION}"
+  # Add link to revision
+  git add "${DESTINATION}"
+}
+
+symlink_file provider.tf
+symlink_file variables.tf
+symlink_file ssh-keys.tf
