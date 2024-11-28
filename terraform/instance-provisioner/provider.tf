@@ -1,0 +1,1 @@
+/Users/olasenioluwunmi/work/seni/AWS_Developer_Associate/terraform/provider.tf
