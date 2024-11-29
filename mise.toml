@@ -1,13 +1,17 @@
 [tools]
-terraform = "latest"
-python = "3"
 opentofu = "latest"
+python = "3"
+terraform = "latest"
 
 [settings]
 legacy_version_file = false
 
 [env]
 # TF_CLI_ARGS = "-var-file=../variables.tf"
+
+[tasks]
+# Connect to instances: mise r ssh instance_ip
+ssh="command ssh -i ${PRIVATE_KEY} -o IdentityFile=${PRIVATE_KEY} -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o IdentitiesOnly=yes"
 
 # AWS credentials may be added like so:
 # [env]

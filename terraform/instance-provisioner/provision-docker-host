@@ -1,0 +1,34 @@
+#!/usr/bin/env zsh
+
+# Initialize variables
+USER=""
+IP=""
+
+# Parse CLI arguments
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --user=*)
+      USER="${1#*=}"          # Extract value after '='
+      shift
+      ;;
+    --ip=*)
+      IP="${1#*=}"
+       # Strip user@ if prefixed
+      IP="${IP#*@}"
+      shift
+      ;;
+    *)
+      echo "Unknown option: $1" >&2
+      exit 1
+      ;;
+  esac
+done
+
+(
+  echo "ansible-playbook --private-key='${PRIVATE_KEY}' playbook.yml -i '${USER}@${IP},'"
+  [[ -z "${USER}" ]] && { echo "USER must be set" ; exit ; }
+  [[ -z "${IP}" ]] && { echo "IP must be set" ; exit ; }
+
+  sleep 30
+  ansible-playbook --private-key="${PRIVATE_KEY}" playbook.yml -i "${USER}@${IP},"
+)

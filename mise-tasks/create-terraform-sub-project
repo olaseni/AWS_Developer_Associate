@@ -18,12 +18,20 @@ mkdir -p "${PROJECT_DIR}"
 
 symlink_file () {
   FILE="${1}"
-  TARGET="${TERRAFORM_DIR}/${FILE}"
+  SOURCE="${TERRAFORM_DIR}/${FILE}"
   DESTINATION="${PROJECT_DIR}/${FILE}"
-  # Check file exists
-  [[ -f "${TARGET}" ]] || { echo "${TARGET} does not exist" ; return 3; }
-  [[ -L "${DESTINATION}" && -e  "${DESTINATION}" ]] || echo "${DESTINATION} already exists"
-  ln -s "${TARGET}" "${DESTINATION}"
+
+  # Check that the source file exists
+  [[ -f "${SOURCE}" ]] || { echo "${SOURCE} does not exist" ; return 3; }
+
+  # Only attempt to create the link if it doesn't already exist
+  if [[ -L "${DESTINATION}" && -e  "${DESTINATION}" ]];
+   then
+     echo "${DESTINATION} already exists"
+  else
+    ln -s "${SOURCE}" "${DESTINATION}"
+  fi
+
   # Add link to revision
   git add "${DESTINATION}"
 }
@@ -31,3 +39,4 @@ symlink_file () {
 symlink_file provider.tf
 symlink_file variables.tf
 symlink_file ssh-keys.tf
+symlink_file ssh-access.tf
