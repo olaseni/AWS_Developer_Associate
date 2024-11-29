@@ -39,3 +39,4 @@ symlink_file () {
 symlink_file provider.tf
 symlink_file variables.tf
 symlink_file ssh-keys.tf
+symlink_file ssh-access.tf

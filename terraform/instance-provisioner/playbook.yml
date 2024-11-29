@@ -1,0 +1,56 @@
+---
+- hosts: all
+  become: true
+  vars:
+    ansible_ssh_extra_args: "-o StrictHostKeyChecking=no"
+    ansible_python_interpreter: /usr/bin/python3.12
+
+  tasks:
+    - name: apt install Docker
+      apt:
+        pkg:
+          - docker.io
+          - docker-buildx
+          - docker-compose-v2
+        state: latest
+        update_cache: true
+
+    - name: Start service docker, if not started
+      ansible.builtin.service:
+        name: docker
+        enabled: true
+        state: started
+
+    - name: Wait for docker socket
+      ansible.builtin.wait_for:
+        path: /var/run/docker.sock
+
+    - name: Wait until `docker ps` returns 0
+      shell: "docker ps"
+      register: process_status
+      retries: 5
+      delay: 10
+      until: process_status.rc == 0
+
+    - name: Remove the "-H" flag within the docker.service unit
+      shell: "sed -ibak 's@ -H fd://@@' /usr/lib/systemd/system/docker.service"
+
+    - name: Ensure the docker group exists
+      ansible.builtin.group:
+        name: docker
+        state: present
+
+    - name: Add ubuntu user to docker group
+      ansible.builtin.user:
+        name: ubuntu
+        groups: docker
+        append: yes
+
+    - name: Reload systemd daemon
+      systemd_service:
+        daemon_reload: yes
+
+    - name: Restart Docker
+      service:
+        name: docker
+        state: restarted

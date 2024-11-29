@@ -5,11 +5,11 @@
       "Sid": "InstancesWithSpecificInstanceType",
       "Effect": "Allow",
       "Action": [
+        "ec2:CreateTags",
         "ec2:RunInstances",
-        "ec2:TerminateInstances",
         "ec2:StartInstances",
         "ec2:StopInstances",
-        "ec2:CreateTags"
+        "ec2:TerminateInstances"
       ],
       "Resource": [
         "arn:aws:ec2:${AWS_REGION}:${AWS_ACCOUNT_ID}:instance/*",
